@@ -12,6 +12,10 @@ const users = []
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers
 
+  if (users.length == 0) {
+    return response.status(404).json({ Error: "Não há usuários cadastrados" })
+  }
+
   const user = users.find((u) => u.username == username)
 
   if (!user) {
@@ -28,10 +32,10 @@ app.post("/users", (request, response) => {
   // Recebendo dados da requisição
   const { name, username } = request.body
 
+  // verificando se o usuario existe pelo username
   const userExists = users.find((u) => u.username === username)
-
   if (userExists) {
-    return response.status(400).send("Usuário já existe no sistema")
+    return response.status(400).json({ Error: "Usuário já existe no sistema" })
   }
 
   // formatando usuario
@@ -88,7 +92,7 @@ app.put("/todos/:id", checksExistsUserAccount, (request, response) => {
   const todo = user.todos.find((t) => t.id === id)
 
   if (!todo) {
-    return response.status(404).json({ Erro: "Todo não existe" })
+    return response.status(404).json({ Error: "Todo não existe" })
   }
 
   // alterando valores da todo
@@ -108,7 +112,11 @@ app.patch("/todos/:id/done", checksExistsUserAccount, (request, response) => {
   const todo = user.todos.find((t) => t.id === id)
 
   if (!todo) {
-    return response.status(404).json({ Erro: "Todo não existe" })
+    return response.status(404).json({ Error: "Todo não existe" })
+  }
+
+  if (todo.done == true) {
+    return response.status(404).json({ Error: "Todo já concluida" })
   }
 
   // altrando valor
@@ -126,7 +134,7 @@ app.delete("/todos/:id", checksExistsUserAccount, (request, response) => {
   // busca o indicie do array
   const index = user.todos.findIndex((t) => t.id === id)
 
-  if (index < 0) {
+  if (index == -1) {
     return response.status(404).json({ Erro: "Todo não existe" })
   }
 
