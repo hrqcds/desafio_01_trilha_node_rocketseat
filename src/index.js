@@ -16,7 +16,7 @@ function checksExistsUserAccount(request, response, next) {
     return response.status(404).json({ Error: "Não há usuários cadastrados" })
   }
 
-  const user = users.find((u) => u.username == username)
+  const user = users.some((u) => u.username == username)
 
   if (!user) {
     return response.status(404).send("Usuário não encontrado")
@@ -33,7 +33,7 @@ app.post("/users", (request, response) => {
   const { name, username } = request.body
 
   // verificando se o usuario existe pelo username
-  const userExists = users.find((u) => u.username === username)
+  const userExists = users.some((u) => u.username === username)
   if (userExists) {
     return response.status(400).json({ Error: "Usuário já existe no sistema" })
   }
